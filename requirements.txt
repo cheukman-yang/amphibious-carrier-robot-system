@@ -1,0 +1,6 @@
+opencv-python
+djitellopy
+flask
+lgpio
+rpi-lgpio
+numpy
