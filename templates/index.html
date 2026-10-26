@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-select=none">
+  <title>体験型エンタメ ～海陸両用空母ロボット～</title>
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --accent-cyan: #00d2ff;
+      --accent-green: #2ea043;
+      --accent-yellow: #d29922;
+      --accent-red: #da3633;
+      --text-main: #f0f6fc;
+      --text-sub: #8b949e;
+      --btn-bg: #21262d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-touch-callout: none; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      color: var(--accent-cyan);
+      letter-spacing: 1.5px;
+      line-height: 1.4;
+    }
+    .header .sub-title {
+      font-size: 1.3rem;
+      color: #79c0ff;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .sticky-banner-container {
+      position: sticky;
+      top: 10px;
+      z-index: 900;
+      margin-bottom: 16px;
+    }
+    .action-banner {
+      background: #1f242c;
+      border-left: 4px solid var(--accent-cyan);
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .banner-critical {
+      background: #490202 !important;
+      border-left: 4px solid #ff7b72 !important;
+      border-color: var(--accent-red) !important;
+      color: #ff7b72 !important;
+      animation: blink 1.2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    .badge-online { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb; }
+    .badge-ok { background: #23863633; color: #3fb950; border: 1px solid #238636; }
+    .badge-warn { background: #bb800933; color: #d29922; border: 1px solid #bb8009; }
+    .badge-alert { background: #da363333; color: #f85149; border: 1px solid #da3633; }
+
+    /* メイン 2カラムグリッド */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .control-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      background: #0d1117;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+    .range-slider {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #30363d;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+    }
+    .slider-val {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+      min-width: 55px;
+    }
+
+    .cam-box {
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: #000;
+      margin-bottom: 12px;
+    }
+    .camera-card-header {
+      padding: 6px 10px;
+      background: #1f242c;
+      font-weight: bold;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .camera-feed-container {
+      position: relative;
+      width: 100%;
+      padding-top: 75%;
+      background: #000;
+    }
+    .camera-feed {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: contain;
+    }
+
+    /* D-Pad グリッド */
+    .dpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 320px;
+      margin: 0 auto 12px auto;
+      touch-action: manipulation;
+    }
+    .ctrl-btn {
+      background: var(--btn-bg);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 12px 6px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background-color 0.05s;
+    }
+    .ctrl-btn.active, .ctrl-btn:active {
+      background-color: var(--accent-red) !important;
+      border-color: #ff7b72 !important;
+      color: #ffffff !important;
+    }
+    .snap-center-btn {
+      background: #1f6feb !important;
+      color: #ffffff !important;
+      border: 1px solid #58a6ff !important;
+    }
+    .snap-center-btn:active {
+      background-color: var(--accent-red) !important;
+    }
+
+    /* Tello 3D コントロール */
+    .tello-controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .tello-subpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .tello-center-snap {
+      background: #8957e5 !important;
+      border-color: #a371f7 !important;
+      color: #ffffff !important;
+    }
+    .tello-center-snap:active {
+      background-color: var(--accent-red) !important;
+    }
+
+    /* Tello 下方アクションボタン群 */
+    .tello-actions-down {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .btn-tello-act {
+      padding: 11px 4px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: #21262d;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+    .btn-takeoff { background: #238636; border-color: #3fb950; color: #fff; }
+    .btn-land { background: #1f6feb; border-color: #58a6ff; color: #fff; }
+    .btn-emg { background: #da3633; border-color: #f85149; color: #fff; }
+
+    /* アライメント操作ボタングループ */
+    .alignment-controls-down {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-color);
+    }
+    .btn-align {
+      background: var(--btn-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .btn-align:active {
+      background-color: var(--accent-red) !important;
+    }
+    .btn-align-active {
+      background-color: var(--accent-red) !important;
+      border-color: #ff7b72 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(218, 54, 51, 0.6);
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th { color: var(--accent-cyan); background: #1f242c; }
+    .thumb-img {
+      width: 56px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+    .action-link {
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+      display: inline-block;
+      margin-right: 4px;
+      cursor: pointer;
+    }
+    .btn-dl { background: #1f6feb33; color: #58a6ff; border: 1px solid #1f6feb; }
+    .btn-del { background: #da363333; color: #f85149; border: 1px solid #da3633; }
+
+    .setting-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>
+      体験型エンタメ
+      <span class="sub-title">～海陸両用空母ロボット～</span>
+    </h1>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span>Raspberry Pi:</span>
+      <span class="status-badge badge-online">オンライン</span>
+    </div>
+    <div class="status-item">
+      <span>車体バッテリー:</span>
+      <span id="car-battery" class="status-badge badge-ok">-- %</span>
+    </div>
+    <div class="status-item">
+      <span>Telloバッテリー:</span>
+      <span id="tello-battery" class="status-badge badge-ok">-- %</span>
+    </div>
+    <div class="status-item">
+      <span>前方距離:</span>
+      <span id="front-dist" class="status-badge badge-ok">-- cm</span>
+    </div>
+    <div class="status-item">
+      <span>モード:</span>
+      <span id="mode-status" class="status-badge badge-ok">陸上モード</span>
+    </div>
+  </div>
+
+  <div class="sticky-banner-container">
+    <div id="action-banner" class="action-banner">
+      ☀️ 陸上待機中 (操縦可能)
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="control-panel">
+      <div class="section-title">
+        <span>🚢</span> 車体操縦 & 前方カメラ
+      </div>
+
+      <div class="slider-container">
+        <span>速度:</span>
+        <input type="range" id="speed-slider" class="range-slider" min="700" max="1600" step="100" value="800" oninput="updateSpeedVal(this.value)" onchange="sendSpeed(this.value)">
+        <span id="speed-val" class="slider-val">800</span>
+      </div>
+
+      <div class="cam-box">
+        <div class="camera-card-header">📷 前方CSIカメラ (顔認識＆日時スタンプ)</div>
+        <div class="camera-feed-container">
+          <img class="camera-feed" src="/video_feed/front" alt="前方カメラ">
+        </div>
+      </div>
+
+      <div id="dpad-container" class="dpad-grid">
+        <button class="ctrl-btn dpad-btn" data-dir="turn_left">↺ 左回転</button>
+        <div style="visibility: hidden;"></div>
+        <button class="ctrl-btn dpad-btn" data-dir="turn_right">↻ 右回転</button>
+
+        <button id="btn-fwd-left" class="ctrl-btn dpad-btn" data-dir="slide_forward_left">↖ 左前</button>
+        <button id="btn-fwd" class="ctrl-btn dpad-btn" data-dir="forward">▲ 前進</button>
+        <button id="btn-fwd-right" class="ctrl-btn dpad-btn" data-dir="slide_forward_right">↗ 右前</button>
+
+        <button class="ctrl-btn dpad-btn" data-dir="slide_left">◀ 左</button>
+        <button class="ctrl-btn snap-center-btn" onclick="takeManualSnapshot()">📷 撮影</button>
+        <button class="ctrl-btn dpad-btn" data-dir="slide_right">右 ▶</button>
+
+        <button class="ctrl-btn dpad-btn" data-dir="slide_backward_left">↙ 左後</button>
+        <button class="ctrl-btn dpad-btn" data-dir="backward">▼ 後退</button>
+        <button class="ctrl-btn dpad-btn" data-dir="slide_backward_right">↘ 右後</button>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="section-title">
+        <span>🛸</span> 艦載機 (Tello) & 甲板カメラ
+      </div>
+
+      <div class="cam-box">
+        <div class="camera-card-header">🛸 Tello カメラ映像 (パイロット視点・日時表示)</div>
+        <div class="camera-feed-container">
+          <img class="camera-feed" src="/video_feed/tello" alt="Telloカメラ">
+        </div>
+      </div>
+
+      <div class="cam-box">
+        <div class="camera-card-header">🎯 甲板USBカメラ (ArUco着陸照準)</div>
+        <div class="camera-feed-container">
+          <img class="camera-feed" src="/video_feed/deck" alt="甲板カメラ">
+        </div>
+      </div>
+
+      <div class="tello-controls-grid">
+        <div class="tello-subpad">
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="0" data-ud="0" data-yaw="-50">↺</button>
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="0" data-ud="50" data-yaw="0">⬆ 上昇</button>
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="0" data-ud="0" data-yaw="50">↻</button>
+          <div></div>
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="0" data-ud="-50" data-yaw="0">⬇ 下降</button>
+          <div></div>
+        </div>
+
+        <div class="tello-subpad">
+          <div></div>
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="50" data-ud="0" data-yaw="0">▲ 前</button>
+          <div></div>
+          <button class="ctrl-btn tello-rc-btn" data-lr="-50" data-fb="0" data-ud="0" data-yaw="0">◀ 左</button>
+          <button class="ctrl-btn tello-center-snap" onclick="takeTelloSnapshot()">📷 撮影</button>
+          <button class="ctrl-btn tello-rc-btn" data-lr="50" data-fb="0" data-ud="0" data-yaw="0">右 ▶</button>
+          <div></div>
+          <button class="ctrl-btn tello-rc-btn" data-lr="0" data-fb="-50" data-ud="0" data-yaw="0">▼ 後</button>
+          <div></div>
+        </div>
+      </div>
+
+      <div class="tello-actions-down">
+        <button class="btn-tello-act btn-takeoff" onclick="sendTelloAction('takeoff')">🛫 離陸</button>
+        <button class="btn-tello-act btn-land" onclick="sendTelloAction('land')">🛬 着陸</button>
+        <button class="btn-tello-act btn-emg" onclick="sendTelloAction('emergency')">🛑 緊急停止</button>
+      </div>
+
+      <div class="alignment-controls-down">
+        <button id="btn-align-start" class="btn-align" onclick="startAlignment()">🎯 着陸アライメント開始 (黄色LED)</button>
+        <button class="btn-align" onclick="stopAlignment()">⏹ アライメント停止</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div class="section-title">
+      <span>📋</span> 登録者（USER01）認識 ＆ 写真撮影記録
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>撮影日時</th>
+          <th>区分 / 登録者名</th>
+          <th>認識スコア</th>
+          <th>カメラ</th>
+          <th>写真プレビュー</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="attendance-body">
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--text-sub);">撮影記録はありません</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="setting-panel">
+    <div class="section-title" style="margin-bottom: 8px;">
+      <span>⚙️</span> 顔認識判断基準 & ブレーキ設定
+    </div>
+    <div class="slider-container" style="margin-bottom: 12px;">
+      <span>認識閾値:</span>
+      <input type="range" id="threshold-slider" class="range-slider" min="0.20" max="0.80" step="0.02" value="0.50" oninput="updateThresholdVal(this.value)" onchange="sendThreshold(this.value)">
+      <span id="threshold-val" class="slider-val">0.50</span>
+    </div>
+    <div class="slider-container" style="margin-bottom: 0;">
+      <span>停止距離:</span>
+      <input type="range" id="brakedist-slider" class="range-slider" min="10" max="60" step="1" value="25" oninput="updateBrakeDistVal(this.value)" onchange="sendBrakeDist(this.value)">
+      <span id="brakedist-val" class="slider-val">25 cm</span>
+    </div>
+  </div>
+
+  <script>
+    function updateSpeedVal(val) { document.getElementById('speed-val').innerText = val; }
+    function sendSpeed(val) {
+      fetch('/api/car/speed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ speed: parseInt(val) })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.brake_distance_cm !== undefined) {
+          document.getElementById('brakedist-slider').value = data.brake_distance_cm;
+          document.getElementById('brakedist-val').innerText = `${parseInt(data.brake_distance_cm)} cm`;
+        }
+      });
+    }
+
+    function updateThresholdVal(val) { document.getElementById('threshold-val').innerText = parseFloat(val).toFixed(2); }
+    function sendThreshold(val) {
+      fetch('/api/face/threshold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ threshold: parseFloat(val) })
+      });
+    }
+
+    function updateBrakeDistVal(val) { document.getElementById('brakedist-val').innerText = `${parseInt(val)} cm`; }
+    function sendBrakeDist(val) {
+      fetch('/api/car/brake_dist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ distance: parseFloat(val) })
+      });
+    }
+
+    function sendMove(dir) {
+      fetch('/api/car/manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction: dir })
+      });
+    }
+
+    function sendTelloAction(action) {
+      fetch('/api/tello/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action })
+      });
+    }
+
+    function sendTelloRc(lr, fb, ud, yaw) {
+      fetch('/api/tello/rc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lr: lr, fb: fb, ud: ud, yaw: yaw })
+      });
+    }
+
+    function startAlignment() {
+      fetch('/api/alignment/start', { method: 'POST' }).then(() => fetchStatus());
+    }
+
+    function stopAlignment() {
+      fetch('/api/alignment/stop', { method: 'POST' }).then(() => fetchStatus());
+    }
+
+    function takeManualSnapshot() {
+      fetch('/api/snapshot/manual', { method: 'POST' }).then(() => fetchStatus());
+    }
+
+    function takeTelloSnapshot() {
+      fetch('/api/snapshot/tello', { method: 'POST' }).then(() => fetchStatus());
+    }
+
+    function deletePhoto(path) {
+      if (confirm('この記録と写真を削除しますか？')) {
+        fetch(`/api/attendance/delete/${path}`, { method: 'POST' }).then(() => fetchStatus());
+      }
+    }
+
+    // 車体ホールド操縦
+    let activeHoldButton = null;
+    function handleStartMove(e) {
+      const btn = e.currentTarget;
+      const dir = btn.getAttribute('data-dir');
+      if (!dir) return;
+      activeHoldButton = btn;
+      btn.classList.add('active');
+      sendMove(dir);
+    }
+    function handleEndMove(e) {
+      if (activeHoldButton) {
+        activeHoldButton.classList.remove('active');
+        activeHoldButton = null;
+        sendMove('stop');
+      }
+    }
+
+    document.querySelectorAll('.dpad-btn').forEach(btn => {
+      btn.addEventListener('mousedown', handleStartMove);
+      btn.addEventListener('mouseup', handleEndMove);
+      btn.addEventListener('mouseleave', handleEndMove);
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleStartMove(e); }, { passive: false });
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); handleEndMove(e); }, { passive: false });
+      btn.addEventListener('touchcancel', (e) => { e.preventDefault(); handleEndMove(e); }, { passive: false });
+    });
+
+    // Tello ホールド操縦
+    let activeTelloBtn = null;
+    function handleStartTello(e) {
+      const btn = e.currentTarget;
+      const lr = parseInt(btn.getAttribute('data-lr') || 0);
+      const fb = parseInt(btn.getAttribute('data-fb') || 0);
+      const ud = parseInt(btn.getAttribute('data-ud') || 0);
+      const yaw = parseInt(btn.getAttribute('data-yaw') || 0);
+      activeTelloBtn = btn;
+      btn.classList.add('active');
+      sendTelloRc(lr, fb, ud, yaw);
+    }
+    function handleEndTello(e) {
+      if (activeTelloBtn) {
+        activeTelloBtn.classList.remove('active');
+        activeTelloBtn = null;
+        sendTelloRc(0, 0, 0, 0);
+      }
+    }
+
+    document.querySelectorAll('.tello-rc-btn').forEach(btn => {
+      btn.addEventListener('mousedown', handleStartTello);
+      btn.addEventListener('mouseup', handleEndTello);
+      btn.addEventListener('mouseleave', handleEndTello);
+      btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleStartTello(e); }, { passive: false });
+      btn.addEventListener('touchend', (e) => { e.preventDefault(); handleEndTello(e); }, { passive: false });
+      btn.addEventListener('touchcancel', (e) => { e.preventDefault(); handleEndTello(e); }, { passive: false });
+    });
+
+    let isInitialLoad = true;
+    function fetchStatus() {
+      fetch('/api/status')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('car-battery').innerText = `${data.car_battery} %`;
+          
+          const telloBatElem = document.getElementById('tello-battery');
+          if (data.tello_connected) {
+            telloBatElem.innerText = `${data.tello_battery} %`;
+            telloBatElem.className = 'status-badge badge-ok';
+          } else {
+            telloBatElem.innerText = '未接続';
+            telloBatElem.className = 'status-badge badge-warn';
+          }
+
+          const banner = document.getElementById('action-banner');
+          if (data.battery_critical) {
+            banner.innerHTML = `⚠️【警告】車体バッテリー低下 (${data.car_battery}%)！充電してください`;
+            banner.className = 'action-banner banner-critical';
+          } else {
+            banner.innerText = data.action_status;
+            banner.className = 'action-banner';
+          }
+
+          if (isInitialLoad) {
+            if (data.current_speed !== undefined) {
+              document.getElementById('speed-slider').value = data.current_speed;
+              document.getElementById('speed-val').innerText = data.current_speed;
+            }
+            if (data.face_threshold !== undefined) {
+              document.getElementById('threshold-slider').value = data.face_threshold;
+              document.getElementById('threshold-val').innerText = parseFloat(data.face_threshold).toFixed(2);
+            }
+            if (data.brake_distance_cm !== undefined) {
+              document.getElementById('brakedist-slider').value = data.brake_distance_cm;
+              document.getElementById('brakedist-val').innerText = `${parseInt(data.brake_distance_cm)} cm`;
+            }
+            isInitialLoad = false;
+          }
+
+          const distElem = document.getElementById('front-dist');
+          if (data.forward_locked) {
+            distElem.innerText = `${data.front_distance} cm (検知)`;
+            distElem.className = 'status-badge badge-alert';
+          } else {
+            distElem.innerText = data.front_distance >= 400 ? '> 400 cm' : `${data.front_distance} cm`;
+            distElem.className = 'status-badge badge-ok';
+          }
+
+          const btnAlignStart = document.getElementById('btn-align-start');
+          if (data.is_aligning) {
+            btnAlignStart.classList.add('btn-align-active');
+          } else {
+            btnAlignStart.classList.remove('btn-align-active');
+          }
+
+          const modeElem = document.getElementById('mode-status');
+          if (data.water_detected) {
+            modeElem.innerText = '🌊 水上モード';
+            modeElem.className = 'status-badge badge-warn';
+          } else {
+            modeElem.innerText = '☀️ 陸上モード';
+            modeElem.className = 'status-badge badge-ok';
+          }
+
+          const tbody = document.getElementById('attendance-body');
+          if (data.attendance_log && data.attendance_log.length > 0) {
+            tbody.innerHTML = data.attendance_log.map(item => `
+              <tr>
+                <td>${item.Date} ${item.Time}</td>
+                <td><strong style="color: ${item.Name === 'USER01' ? 'var(--accent-green)' : 'var(--accent-cyan)'};">${item.Name}</strong></td>
+                <td><span style="color: var(--accent-yellow); font-weight: bold;">${item.Score || '-'}</span></td>
+                <td>${item.Camera}</td>
+                <td>
+                  <a href="/snapshots/${item.Path}" target="_blank">
+                    <img src="/snapshots/${item.Path}" class="thumb-img" alt="snapshot">
+                  </a>
+                </td>
+                <td>
+                  <a href="/snapshots/${item.Path}" download="${item.Path}" class="action-link btn-dl">保存</a>
+                  <button onclick="deletePhoto('${item.Path}')" class="action-link btn-del">削除</button>
+                </td>
+              </tr>
+            `).join('');
+          } else {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-sub);">撮影記録はありません</td></tr>';
+          }
+        })
+        .catch(() => {});
+    }
+
+    setInterval(fetchStatus, 1000);
+    fetchStatus();
+  </script>
+</body>
+</html>
